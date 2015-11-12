@@ -1,0 +1,74 @@
+- name: Sample Manager
+  hosts: all
+  sudo: yes
+  vars:
+    php_version: 5.5.30
+  tasks:
+    # Disable SELinux for FuelPHP application
+    - name: Disable SELinux
+      selinux: state=disabled
+    # Add repository for installing Nginx and PHP
+    - name: Add repository 'remi-repo'
+      yum: name=http://rpms.famillecollet.com/enterprise/remi-release-7.rpm state=present
+    # Nginx
+    - name: Install nginx
+      yum: name=nginx state=present
+    - name: Start nginx
+      service: name=nginx state=started
+    - name: Set nginx autostart
+      command: chkconfig nginx on
+    - name: Configure nginx
+      template: src="templates/nginx/hashicorp-sample-manager.conf" dest="/etc/nginx/conf.d/hashicorp-sample-manager.conf" owner=root group=root
+      notify:
+        - Restart nginx
+    # Git
+    - name: Install git
+      yum: name="git" state=present
+    # PHP and php-fpm
+    - name: Install PHP libraries and php-fpm
+      yum: name={{ item }} enablerepo=remi-php55 state=present
+      with_items:
+        - php-{{ php_version }}
+        - php-devel-{{ php_version }}
+        - php-fpm-{{ php_version }}
+        - php-cli-{{ php_version }}
+        - php-mbstring-{{ php_version }}
+        - php-mysqlnd-{{ php_version }}
+        - php-process-{{ php_version }}
+        - php-xml-{{ php_version }}
+        - php-opcache-{{ php_version }}
+        - php-bcmath-{{ php_version }}
+    - name: Start php-fpm
+      service: name=php-fpm state=started
+    - name: Set php-fpm autostart
+      command: chkconfig php-fpm on
+    - name: Configure php-fpm
+      template: src="templates/php-fpm/www.conf" dest="/etc/php-fpm.d/www.conf" owner=root group=root
+      notify:
+        - Restart php-fpm
+    # Change permission for installing sample FuelPHP application
+    - name: Allow permission to /home/vagrant
+      file: path=/home/vagrant state=directory mode=0755
+    # Sample FuelPHP application
+    - name: Clone sample FuelPHP application
+      git: repo=https://github.com/muziyoshiz/hashicorp-sample-manager.git
+           dest=/home/vagrant/hashicorp-sample-manager
+           version=master
+           accept_hostkey=yes
+      sudo: no
+    # Execute Composer
+    - name: Update Composer itself
+      command: php composer.phar self-update
+      sudo: no
+      args:
+        chdir: /home/vagrant/hashicorp-sample-manager
+    - name: Update libraries
+      command: php composer.phar update
+      sudo: no
+      args:
+        chdir: /home/vagrant/hashicorp-sample-manager
+  handlers:
+    - name: Restart nginx
+      action: service name=nginx state=restarted
+    - name: Restart php-fpm
+      action: service name=php-fpm state=restarted
