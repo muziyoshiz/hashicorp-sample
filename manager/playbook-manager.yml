@@ -58,6 +58,7 @@
            dest=/home/vagrant/hashicorp-sample-manager
            version=master
            accept_hostkey=yes
+           force=yes
       sudo: no
     # Execute Composer
     - name: Update Composer itself
@@ -70,6 +71,9 @@
       sudo: no
       args:
         chdir: /home/vagrant/hashicorp-sample-manager
+    # Install MariaDB client for testing
+    - name: Install MariaDB Client
+      yum: name=mariadb state=present
   handlers:
     - name: Restart nginx
       action: service name=nginx state=restarted

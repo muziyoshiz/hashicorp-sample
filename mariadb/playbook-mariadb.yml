@@ -14,7 +14,6 @@
       with_items:
         - mariadb
         - mariadb-server
-        - MySQL-python
     - name: Start MariaDB
       service: name=mariadb state=started
     - name: Set MariaDB autostart
@@ -37,5 +36,5 @@
         name: manager
         password: "dummy mgr password"
         priv: "sample.*:ALL"
-        host: localhost
+        host: 192.168.33.10
         state: present
