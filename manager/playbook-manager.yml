@@ -7,6 +7,9 @@
     # Disable SELinux for FuelPHP application
     - name: Disable SELinux
       selinux: state=disabled
+    # Change timezone
+    - name: Change timezone from UTC to JST
+      command: cp -p /usr/share/zoneinfo/Japan /etc/localtime
     # Add repository for installing Nginx and PHP
     - name: Add repository 'remi-repo'
       yum: name=http://rpms.famillecollet.com/enterprise/remi-release-7.rpm state=present
