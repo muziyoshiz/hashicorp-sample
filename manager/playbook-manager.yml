@@ -71,6 +71,13 @@
       sudo: no
       args:
         chdir: /home/vagrant/hashicorp-sample-manager
+    # Configure settings for FuelPHP
+    - name: Allow permission to /home/vagrant/hashicorp-sample-manager/fuel/app/logs
+      file: path=/home/vagrant/hashicorp-sample-manager/fuel/app/logs state=directory mode=0777
+    - name: Set timezone to /etc/php.ini for FuelPHP logging
+      replace: dest=/etc/php.ini regexp='^;date\.timezone =$' replace='date.timezone = "Asia/Tokyo"' backup=yes
+      notify:
+        - Restart php-fpm
     # Install MariaDB client for testing
     - name: Install MariaDB Client
       yum: name=mariadb state=present
