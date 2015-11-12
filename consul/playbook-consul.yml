@@ -1,0 +1,37 @@
+- name: Sample Consul Server
+  hosts: all
+  sudo: yes
+  tasks:
+    # Change timezone
+    - name: Change timezone from UTC to JST
+      command: cp -p /usr/share/zoneinfo/Japan /etc/localtime
+    # Add repository for yum
+    - name: Add repository 'remi-repo'
+      yum: name=http://rpms.famillecollet.com/enterprise/remi-release-7.rpm state=present
+    # Install packages
+    - name: Install unzip for Consul package
+      yum: name=unzip state=present
+    # Install Consul
+    - name: Check if consul is installed
+      stat: path=/usr/local/bin/consul
+      register: consul_bin
+    - name: Download Consul package
+      get_url: url=https://releases.hashicorp.com/consul/0.5.2/consul_0.5.2_linux_amd64.zip dest=/home/vagrant/consul.zip
+      when: not consul_bin.stat.exists
+    - name: Unzip Consul package
+      command: unzip consul.zip
+      args:
+        chdir: /home/vagrant/
+      when: not consul_bin.stat.exists
+    - name: Remove Consul package
+      command: rm /home/vagrant/consul.zip
+      when: not consul_bin.stat.exists
+    - name: Add execution permission to consul command
+      file: path=/home/vagrant/consul state=file mode="0755"
+      when: not consul_bin.stat.exists
+    - name: Move consul command
+      command: mv /home/vagrant/consul /usr/local/bin/consul
+      when: not consul_bin.stat.exists
+    # Create Consul server settings
+    - name: Create consul setting directory
+      command: mkdir -p /etc/consul.d
