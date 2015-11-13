@@ -33,5 +33,13 @@
       command: mv /home/vagrant/consul /usr/local/bin/consul
       when: not consul_bin.stat.exists
     # Create Consul server settings
+    - name: Create sysconfig file for environments
+      template: src="templates/consul/consul" dest="/etc/sysconfig/consul" owner=root group=root mode=0644
     - name: Create consul setting directory
-      command: mkdir -p /etc/consul.d
+      file: path=/etc/consul.d state=directory owner=root group=root mode=0755
+    - name: Create common consul setting
+      template: src="templates/consul/consul.service" dest="/etc/systemd/system/consul.service" owner=root group=root mode=0644
+    - name: Call daemon-reload explicitly because service module does not call it
+      command: systemctl daemon-reload
+    - name: Start consul and create autostart setting
+      service: name=consul state=started enabled=yes
