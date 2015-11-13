@@ -15,10 +15,8 @@
         - mariadb
         - mariadb-server
         - MySQL-python # required by mysql_db and mysql_user module
-    - name: Start MariaDB
-      service: name=mariadb state=started
-    - name: Set MariaDB autostart
-      command: chkconfig mariadb on
+    - name: Start MariaDB and create autostart setting
+      service: name=mariadb state=started enabled=yes
     # Set root account
     - name: Set root account of MariaDB
       mysql_user:

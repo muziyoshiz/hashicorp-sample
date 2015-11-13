@@ -16,10 +16,8 @@
     # Nginx
     - name: Install nginx
       yum: name=nginx state=present
-    - name: Start nginx
-      service: name=nginx state=started
-    - name: Set nginx autostart
-      command: chkconfig nginx on
+    - name: Start nginx and create autostart setting
+      service: name=nginx state=started enabled=yes
     - name: Configure nginx
       template: src="templates/nginx/hashicorp-sample-manager.conf" dest="/etc/nginx/conf.d/hashicorp-sample-manager.conf" owner=root group=root
     # Git
@@ -39,10 +37,8 @@
         - php-xml-{{ php_version }}
         - php-opcache-{{ php_version }}
         - php-bcmath-{{ php_version }}
-    - name: Start php-fpm
-      service: name=php-fpm state=started
-    - name: Set php-fpm autostart
-      command: chkconfig php-fpm on
+    - name: Start php-fpm and create autostart setting
+      service: name=php-fpm state=started enabled=yes
     - name: Configure php-fpm
       template: src="templates/php-fpm/www.conf" dest="/etc/php-fpm.d/www.conf" owner=root group=root
       notify:
