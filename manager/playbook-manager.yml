@@ -2,7 +2,7 @@
   hosts: all
   sudo: yes
   vars:
-    php_version: 5.5.30
+    php_version: 5.6.15
   tasks:
     # Disable SELinux for FuelPHP application
     - name: Disable SELinux
@@ -22,14 +22,12 @@
       command: chkconfig nginx on
     - name: Configure nginx
       template: src="templates/nginx/hashicorp-sample-manager.conf" dest="/etc/nginx/conf.d/hashicorp-sample-manager.conf" owner=root group=root
-      notify:
-        - Restart nginx
     # Git
     - name: Install git
       yum: name="git" state=present
     # PHP and php-fpm
     - name: Install PHP libraries and php-fpm
-      yum: name={{ item }} enablerepo=remi-php55 state=present
+      yum: name={{ item }} enablerepo=remi-php56 state=present
       with_items:
         - php-{{ php_version }}
         - php-devel-{{ php_version }}
@@ -66,6 +64,11 @@
       sudo: no
       args:
         chdir: /home/vagrant/hashicorp-sample-manager
+    - name: Set GitHub Token
+      command: php composer.phar config --global github-oauth.github.com 76d3b71859c3f511a8f7cc471667b5f4516a6387
+      sudo: no
+      args:
+        chdir: /home/vagrant/hashicorp-sample-manager
     - name: Update libraries
       command: php composer.phar update
       sudo: no
@@ -81,8 +84,8 @@
     # Install MariaDB client for testing
     - name: Install MariaDB Client
       yum: name=mariadb state=present
+    # Restart nginx always at last
+    - service: name=nginx state=restarted
   handlers:
-    - name: Restart nginx
-      action: service name=nginx state=restarted
     - name: Restart php-fpm
       action: service name=php-fpm state=restarted
