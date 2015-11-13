@@ -41,5 +41,6 @@
       template: src="templates/consul/consul.service" dest="/etc/systemd/system/consul.service" owner=root group=root mode=0644
     - name: Call daemon-reload explicitly because service module does not call it
       command: systemctl daemon-reload
+    # Common task
     - name: Start consul and create autostart setting
-      service: name=consul state=started enabled=yes
+      service: name=consul state=restarted enabled=yes
