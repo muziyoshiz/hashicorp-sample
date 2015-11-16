@@ -1,0 +1,5 @@
+- name: Consul Servers
+  hosts: all
+  sudo: yes
+  roles:
+    - consul_servers
