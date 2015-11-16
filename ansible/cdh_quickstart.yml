@@ -1,0 +1,8 @@
+- name: Cloudera QuickStart VM
+  hosts: all
+  sudo: yes
+  roles:
+    - common
+    - common/centos6
+    - consul_agents/centos6
+    - cdh_quickstart

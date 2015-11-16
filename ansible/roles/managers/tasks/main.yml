@@ -1,0 +1,81 @@
+# Disable SELinux for FuelPHP application
+- name: Disable SELinux
+  selinux: state=disabled
+# Nginx
+- name: Install nginx
+  yum: name=nginx state=present
+- name: Start nginx and create autostart setting
+  service: name=nginx state=started enabled=yes
+- name: Configure nginx
+  template: src="nginx/hashicorp-sample-manager.conf" dest="/etc/nginx/conf.d/hashicorp-sample-manager.conf" owner=root group=root
+# Git
+- name: Install git
+  yum: name="git" state=present
+# PHP and php-fpm
+- name: Install PHP libraries and php-fpm
+  yum: name={{ item }} enablerepo=remi-php56 state=present
+  with_items:
+    - php-{{ php_version }}
+    - php-devel-{{ php_version }}
+    - php-fpm-{{ php_version }}
+    - php-cli-{{ php_version }}
+    - php-mbstring-{{ php_version }}
+    - php-mysqlnd-{{ php_version }}
+    - php-process-{{ php_version }}
+    - php-xml-{{ php_version }}
+    - php-opcache-{{ php_version }}
+    - php-bcmath-{{ php_version }}
+- name: Start php-fpm and create autostart setting
+  service: name=php-fpm state=started enabled=yes
+- name: Configure php-fpm
+  template: src="php-fpm/www.conf" dest="/etc/php-fpm.d/www.conf" owner=root group=root
+  notify:
+    - Restart php-fpm
+# Change permission for installing sample FuelPHP application
+- name: Allow permission to /home/vagrant
+  file: path=/home/vagrant state=directory mode=0755
+# Sample FuelPHP application
+- name: Clone sample FuelPHP application
+  git: repo=https://github.com/muziyoshiz/hashicorp-sample-manager.git
+       dest=/home/vagrant/hashicorp-sample-manager
+       version=master
+       accept_hostkey=yes
+       force=yes
+  sudo: no
+# Execute Composer
+- name: Update Composer itself
+  command: php composer.phar self-update
+  sudo: no
+  args:
+    chdir: /home/vagrant/hashicorp-sample-manager
+- name: Set GitHub Token
+  command: php composer.phar config --global github-oauth.github.com 76d3b71859c3f511a8f7cc471667b5f4516a6387
+  sudo: no
+  args:
+    chdir: /home/vagrant/hashicorp-sample-manager
+- name: Update libraries
+  command: php composer.phar update
+  sudo: no
+  args:
+    chdir: /home/vagrant/hashicorp-sample-manager
+# Configure settings for FuelPHP
+- name: Allow permission to /home/vagrant/hashicorp-sample-manager/fuel/app/logs
+  file: path=/home/vagrant/hashicorp-sample-manager/fuel/app/logs state=directory mode=0777
+- name: Set timezone to /etc/php.ini for FuelPHP logging
+  replace: dest=/etc/php.ini regexp='^;date\.timezone =$' replace='date.timezone = "Asia/Tokyo"' backup=yes
+  notify:
+    - Restart php-fpm
+# Install MariaDB client for testing
+- name: Install MariaDB Client
+  yum: name=mariadb state=present
+# Restart nginx always at last
+- service: name=nginx state=restarted
+# Create Consul client settings
+- name: Create sysconfig file for environments
+  template: src="consul/consul" dest="/etc/sysconfig/consul" owner=root group=root mode=0644
+# Manager-specific setting
+- name: Create manager service information for consul
+  template: src="consul/manager.json" dest="/etc/consul.d/manager.json" owner=root group=root mode=0644
+# Common task
+- name: Restart consul
+  service: name=consul state=restarted

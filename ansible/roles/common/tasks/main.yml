@@ -1,0 +1,3 @@
+# Change timezone
+- name: Change timezone from UTC to JST
+  command: cp -p /usr/share/zoneinfo/Japan /etc/localtime

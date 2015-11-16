@@ -1,0 +1,42 @@
+# Install packages
+- name: Install unzip for Consul package
+  yum: name=unzip state=present
+# Install Consul
+- name: Check if consul is installed
+  stat: path=/usr/local/bin/consul
+  register: consul_bin
+- name: Download Consul package
+  get_url: url=https://releases.hashicorp.com/consul/0.5.2/consul_0.5.2_linux_amd64.zip dest=/tmp/consul.zip
+  when: not consul_bin.stat.exists
+- name: Unzip Consul package
+  command: unzip consul.zip
+  args:
+    chdir: /tmp
+  when: not consul_bin.stat.exists
+- name: Remove Consul package
+  command: rm /tmp/consul.zip
+  when: not consul_bin.stat.exists
+- name: Add execution permission to consul command
+  file: path=/tmp/consul state=file mode="0755"
+  when: not consul_bin.stat.exists
+- name: Move consul command
+  command: mv /tmp/consul /usr/local/bin/consul
+  when: not consul_bin.stat.exists
+- name: Create consul setting directory
+  file: path=/etc/consul.d state=directory owner=root group=root mode=0755
+- name: Create common consul script for CentOS 6
+  template: src="consul" dest="/etc/init.d/consul" owner=root group=root mode=0755
+# Start consul and create autostart setting
+- name: Autostart Consul
+  service: name=consul state=started enabled=yes
+# Install dnsmasq
+- name: Install dnsmasq
+  yum: name=dnsmasq state=present
+- name: Create dnsmasq setting
+  template: src="dnsmasq.conf" dest="/etc/dnsmasq.conf" owner=root group=root mode=0644
+- name: Start dnsmasq and create autostart setting
+  service: name=dnsmasq state=restarted enabled=yes
+- name: Replace /etc/resolv.conf that includes localhost as nameserver
+  template: src="resolv.conf" dest="/etc/resolv.conf" owner=root group=root mode=0644
+- name: Forbid NetworkManager from overwriting /etc/resolv.conf
+  lineinfile: dest=/etc/NetworkManager/NetworkManager.conf line="dns=none"

@@ -1,0 +1,8 @@
+- name: MariaDB Servers
+  hosts: all
+  sudo: yes
+  roles:
+    - common
+    - common/centos7
+    - consul_agents/centos7
+    - mariadb_servers
