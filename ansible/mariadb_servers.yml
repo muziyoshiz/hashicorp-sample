@@ -1,0 +1,5 @@
+- name: MariaDB Servers
+  hosts: all
+  sudo: yes
+  roles:
+    - mariadb_servers

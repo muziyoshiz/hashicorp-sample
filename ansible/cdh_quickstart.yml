@@ -1,0 +1,5 @@
+- name: Cloudera QuickStart VM
+  hosts: all
+  sudo: yes
+  roles:
+    - cdh_quickstart

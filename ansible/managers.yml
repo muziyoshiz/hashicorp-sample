@@ -1,0 +1,5 @@
+- name: Sample Managers
+  hosts: all
+  sudo: yes
+  roles:
+    - managers
