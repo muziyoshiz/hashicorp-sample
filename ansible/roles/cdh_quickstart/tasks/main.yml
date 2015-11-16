@@ -1,9 +1,3 @@
-# Change timezone
-- name: Change timezone from UTC to JST
-  command: cp -p /usr/share/zoneinfo/Japan /etc/localtime
-# Add repository for yum
-- name: Add repository 'remi-repo' for CentOS 6
-  yum: name=http://rpms.famillecollet.com/enterprise/remi-release-6.rpm state=present
 # Install packages
 - name: Install unzip for Consul package
   yum: name=unzip state=present
