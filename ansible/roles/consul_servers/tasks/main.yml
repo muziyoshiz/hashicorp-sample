@@ -4,5 +4,3 @@
 # Common task
 - name: Restart consul
   service: name=consul state=restarted
-- name: Replace /etc/resolv.conf that includes localhost as nameserver
-  template: src="dnsmasq/resolv.conf" dest="/etc/resolv.conf" owner=root group=root mode=0644
