@@ -1,0 +1,6 @@
+{
+  "service": {
+    "name": "impala",
+    "port": 21050
+  }
+}

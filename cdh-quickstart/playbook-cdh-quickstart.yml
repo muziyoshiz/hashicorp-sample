@@ -1,0 +1,58 @@
+- name: Cloudera QuickStart VM
+  hosts: all
+  sudo: yes
+  tasks:
+    # Change timezone
+    - name: Change timezone from UTC to JST
+      command: cp -p /usr/share/zoneinfo/Japan /etc/localtime
+    # Add repository for yum
+    - name: Add repository 'remi-repo' for CentOS 6
+      yum: name=http://rpms.famillecollet.com/enterprise/remi-release-6.rpm state=present
+    # Install packages
+    - name: Install unzip for Consul package
+      yum: name=unzip state=present
+    # Install Consul
+    - name: Check if consul is installed
+      stat: path=/usr/local/bin/consul
+      register: consul_bin
+    - name: Download Consul package
+      get_url: url=https://releases.hashicorp.com/consul/0.5.2/consul_0.5.2_linux_amd64.zip dest=/home/cloudera/Downloads/consul.zip
+      when: not consul_bin.stat.exists
+    - name: Unzip Consul package
+      command: unzip consul.zip
+      args:
+        chdir: /home/cloudera/Downloads/
+      when: not consul_bin.stat.exists
+    - name: Remove Consul package
+      command: rm /home/cloudera/Downloads/consul.zip
+      when: not consul_bin.stat.exists
+    - name: Add execution permission to consul command
+      file: path=/home/cloudera/Downloads/consul state=file mode="0755"
+      when: not consul_bin.stat.exists
+    - name: Move consul command
+      command: mv /home/cloudera/Downloads/consul /usr/local/bin/consul
+      when: not consul_bin.stat.exists
+    # Create Consul server settings
+    - name: Create sysconfig file for environments
+      template: src="templates/consul/consul" dest="/etc/sysconfig/consul" owner=root group=root mode=0644
+    - name: Create consul setting directory
+      file: path=/etc/consul.d state=directory owner=root group=root mode=0755
+    - name: Create common consul script for CentOS 6
+      template: src="templates/consul/consul.script" dest="/etc/init.d/consul" owner=root group=root mode=0755
+    # Cloudera-specific setting
+    - name: Create impala service information for consul
+      template: src="templates/consul/impala.json" dest="/etc/consul.d/impala.json" owner=root group=root mode=0644
+    # Common task
+    - name: Start consul and create autostart setting
+      service: name=consul state=restarted enabled=yes
+    # Install dnsmasq
+    - name: Install dnsmasq
+      yum: name=dnsmasq state=present
+    - name: Create dnsmasq setting
+      template: src="templates/dnsmasq/dnsmasq.conf" dest="/etc/dnsmasq.conf" owner=root group=root mode=0644
+    - name: Start dnsmasq and create autostart setting
+      service: name=dnsmasq state=restarted enabled=yes
+    - name: Replace /etc/resolv.conf that includes localhost as nameserver
+      template: src="templates/dnsmasq/resolv.conf" dest="/etc/resolv.conf" owner=root group=root mode=0644
+    - name: Forbid NetworkManager from overwriting /etc/resolv.conf
+      lineinfile: dest=/etc/NetworkManager/NetworkManager.conf line="dns=none"

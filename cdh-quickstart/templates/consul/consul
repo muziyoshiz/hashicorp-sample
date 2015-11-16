@@ -1,0 +1,2 @@
+GOMAXPROCS=2
+OPTIONS="-join 192.168.33.12 -data-dir /tmp/consul -bind 192.168.33.20"
