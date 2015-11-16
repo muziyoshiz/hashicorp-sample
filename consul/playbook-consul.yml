@@ -13,7 +13,7 @@
       yum: name=unzip state=present
     # Install Consul
     - name: Check if consul is installed
-      stat: path=/usr/local/sbin/consul
+      stat: path=/usr/local/bin/consul
       register: consul_bin
     - name: Download Consul package
       get_url: url=https://releases.hashicorp.com/consul/0.5.2/consul_0.5.2_linux_amd64.zip dest=/home/vagrant/consul.zip
@@ -30,7 +30,7 @@
       file: path=/home/vagrant/consul state=file mode="0755"
       when: not consul_bin.stat.exists
     - name: Move consul command
-      command: mv /home/vagrant/consul /usr/local/sbin/consul
+      command: mv /home/vagrant/consul /usr/local/bin/consul
       when: not consul_bin.stat.exists
     # Create Consul server settings
     - name: Create sysconfig file for environments
