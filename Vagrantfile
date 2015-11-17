@@ -24,6 +24,10 @@ mariadb_manager_user_password = "manager-password"
 mariadb_manager_database      = "sample"
 mariadb_manager_host          = vagrant_ipaddr_manager
 
+# Sample manager settings
+manager_nginx_server_name = "manager.example.com"
+manager_git_version       = "master"
+
 # GitHub settings
 if File.exists?(GITHUB_TOKEN_FILEPATH)
   github_token = File.open(GITHUB_TOKEN_FILEPATH).read.chomp
@@ -102,7 +106,12 @@ Vagrant.configure(2) do |config|
           ipaddr_bind: vagrant_ipaddr_manager
         },
         manager: {
-          server_name: "manager.example.com",
+          nginx: {
+            server_name: manager_nginx_server_name
+          },
+          git: {
+            version: manager_git_version
+          },
           composer: {
             github_token: github_token
           }

@@ -38,7 +38,7 @@
 - name: Clone sample FuelPHP application
   git: repo=https://github.com/muziyoshiz/hashicorp-sample-manager.git
        dest=/home/vagrant/hashicorp-sample-manager
-       version=master
+       version={{ manager.git.version }}
        accept_hostkey=yes
        force=yes
   sudo: no
