@@ -31,6 +31,7 @@
   template: src="php-fpm/www.conf" dest="/etc/php-fpm.d/www.conf" owner=root group=root
   notify:
     - Restart php-fpm
+    - Restart nginx
 # Change permission for installing sample FuelPHP application
 - name: Allow permission to /home/vagrant
   file: path=/home/vagrant state=directory mode=0755
@@ -49,7 +50,7 @@
   args:
     chdir: /home/vagrant/hashicorp-sample-manager
 - name: Check GitHub Token
-  fail: msg="manager.composer.github_token is undefined. {{ manager.composer.github_token }}"
+  fail: msg="manager.composer.github_token is undefined."
   when: manager.composer.github_token is undefined or manager.composer.github_token == None
 - name: Set GitHub Token
   command: php composer.phar config --global github-oauth.github.com {{ manager.composer.github_token }}
@@ -68,6 +69,7 @@
   replace: dest=/etc/php.ini regexp='^;date\.timezone =$' replace='date.timezone = "Asia/Tokyo"' backup=yes
   notify:
     - Restart php-fpm
+    - Restart nginx
 # Install MariaDB client for testing
 - name: Install MariaDB Client
   yum: name=mariadb state=present

@@ -9,7 +9,9 @@ GITHUB_TOKEN_FILEPATH = "./github_token"
 # IP addresses on host-only network
 vagrant_ipaddr_consul_server  = "192.168.33.10"
 vagrant_ipaddr_mariadb_server = "192.168.33.20"
-vagrant_ipaddr_manager        = "192.168.33.30"
+# When multiple managers are required, set multiple IP addresses as follows
+# vagrant_ipaddr_managers       = [ "192.168.33.30", "192.168.33.31" ]
+vagrant_ipaddr_managers       = [ "192.168.33.30" ]
 vagrant_ipaddr_cdh_quickstart = "192.168.33.40"
 
 # Basic Consul settings
@@ -18,11 +20,10 @@ consul_ipaddr_join = "192.168.33.10"
 # MariaDB server settings
 # Auto-gerenated root password
 mariadb_root_password = (0...8).map{ (65 + rand(26)).chr }.join
-# Username, password and database for sample manager application
+# Database, username and password for sample manager application
+mariadb_manager_database      = "sample"
 mariadb_manager_user_name     = "manager"
 mariadb_manager_user_password = "manager-password"
-mariadb_manager_database      = "sample"
-mariadb_manager_host          = vagrant_ipaddr_manager
 
 # Sample manager settings
 manager_nginx_server_name = "manager.example.com"
@@ -75,48 +76,49 @@ Vagrant.configure(2) do |config|
           root: {
             password: mariadb_root_password
           },
-          normal_users: [
-                         {
-                           name: mariadb_manager_user_name,
-                           password: mariadb_manager_user_password,
-                           database: mariadb_manager_database,
-                           host: mariadb_manager_host
-                         }
-                        ],
-          databases: [ mariadb_manager_database ]
+          databases: [ mariadb_manager_database ],
+          manager_user: {
+            name: mariadb_manager_user_name,
+            password: mariadb_manager_user_password,
+            database: mariadb_manager_database,
+            hosts: vagrant_ipaddr_managers
+          }
         }
       }
     end
   end
 
   # Sample Manager Server
-  config.vm.define "manager1" do |c|
-    c.vm.hostname = "manager1"
-    c.vm.network "private_network", ip: vagrant_ipaddr_manager
+  num_of_managers = vagrant_ipaddr_managers.size
+  (0...num_of_managers).each do |i|
+    config.vm.define "manager#{i+1}" do |c|
+      c.vm.hostname = "manager#{i+1}"
+      c.vm.network "private_network", ip: vagrant_ipaddr_managers[i]
 
-    c.vm.provider "virtualbox" do |vb|
-      vb.memory = "1024"
-    end
+      c.vm.provider "virtualbox" do |vb|
+        vb.memory = "1024"
+      end
 
-    c.vm.provision "ansible" do |ansible|
-      ansible.playbook = "ansible/managers.yml"
-      ansible.extra_vars = {
-        consul: {
-          ipaddr_join: consul_ipaddr_join,
-          ipaddr_bind: vagrant_ipaddr_manager
-        },
-        manager: {
-          nginx: {
-            server_name: manager_nginx_server_name
+      c.vm.provision "ansible" do |ansible|
+        ansible.playbook = "ansible/managers.yml"
+        ansible.extra_vars = {
+          consul: {
+            ipaddr_join: consul_ipaddr_join,
+            ipaddr_bind: vagrant_ipaddr_managers[i]
           },
-          git: {
-            version: manager_git_version
-          },
-          composer: {
-            github_token: github_token
+          manager: {
+            nginx: {
+              server_name: manager_nginx_server_name
+            },
+            git: {
+              version: manager_git_version
+            },
+            composer: {
+              github_token: github_token
+            }
           }
         }
-      }
+      end
     end
   end
 

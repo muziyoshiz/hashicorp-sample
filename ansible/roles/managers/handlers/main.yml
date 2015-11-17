@@ -1,2 +1,5 @@
 - name: Restart php-fpm
   action: service name=php-fpm state=restarted
+- name: Restart nginx
+  action: service name=nginx state=restarted
+
