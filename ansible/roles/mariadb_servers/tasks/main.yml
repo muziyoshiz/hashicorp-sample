@@ -29,7 +29,7 @@
     state: present
 # Create Consul client settings
 - name: Create sysconfig file for environments
-  template: src="consul/consul" dest="/etc/sysconfig/consul" owner=root group=root mode=0644
+  template: src="consul/consul.j2" dest="/etc/sysconfig/consul" owner=root group=root mode=0644
 # MariaDB-specific setting
 - name: Create mariadb service information for consul
   template: src="consul/mariadb.json" dest="/etc/consul.d/mariadb.json" owner=root group=root mode=0644

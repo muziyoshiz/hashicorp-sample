@@ -1,2 +1,0 @@
-GOMAXPROCS=2
-OPTIONS="-server -bootstrap-expect 1 -data-dir /tmp/consul -bind 192.168.33.12"

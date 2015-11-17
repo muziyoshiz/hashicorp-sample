@@ -1,0 +1,5 @@
+GOMAXPROCS=2
+{% if consul.is_server %}
+OPTIONS="-server -bootstrap-expect {{ consul.bootstrap_expect }} -data-dir /tmp/consul -bind {{ consul.ipaddr_bind }}"
+{% else %}
+{% endif %}
