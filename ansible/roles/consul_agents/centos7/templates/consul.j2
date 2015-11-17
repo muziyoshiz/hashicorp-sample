@@ -1,0 +1,6 @@
+GOMAXPROCS=2
+{% if consul.is_server is defined and consul.is_server %}
+OPTIONS="-server -bootstrap-expect {{ consul.bootstrap_expect }} -data-dir /tmp/consul -bind {{ consul.ipaddr_bind }}"
+{% else %}
+OPTIONS="-join {{ consul.ipaddr_join }} -data-dir /tmp/consul -bind {{ consul.ipaddr_bind }}"
+{% endif %}

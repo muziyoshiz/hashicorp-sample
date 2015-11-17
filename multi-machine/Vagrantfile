@@ -1,14 +1,33 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# GitHub token file (gitignored)
+# NOTICE: Please create this file and write GitHub token only in one line
+#         (Only one newline character is acceptable)
+GITHUB_TOKEN_FILEPATH = "./github_token"
+
 # IP addresses on host-only network
-vagrant_ipaddr_consul_server = "192.168.33.12"
+vagrant_ipaddr_consul_server  = "192.168.33.12"
 vagrant_ipaddr_mariadb_server = "192.168.33.11"
-vagrant_ipaddr_manager = "192.168.33.10"
+vagrant_ipaddr_manager        = "192.168.33.10"
 vagrant_ipaddr_cdh_quickstart = "192.168.33.20"
 
 # Basic Consul settings
 consul_ipaddr_join = "192.168.33.12"
+
+# MariaDB server settings
+# Auto-gerenated root password
+mariadb_root_password = (0...8).map{ (65 + rand(26)).chr }.join
+# Username, password and database for sample manager application
+mariadb_manager_user_name     = "manager"
+mariadb_manager_user_password = "manager-password"
+mariadb_manager_database      = "sample"
+mariadb_manager_host          = vagrant_ipaddr_manager
+
+# GitHub settings
+if File.exists?(GITHUB_TOKEN_FILEPATH)
+  github_token = File.open(GITHUB_TOKEN_FILEPATH).read.chomp
+end
 
 Vagrant.configure(2) do |config|
   # Basic settings
@@ -35,7 +54,7 @@ Vagrant.configure(2) do |config|
       }
     end
   end
-
+  
   # MariaDB Server
   config.vm.define "mariadb1" do |c|
     c.vm.hostname = "mariadb1"
@@ -47,6 +66,20 @@ Vagrant.configure(2) do |config|
         consul: {
           ipaddr_join: consul_ipaddr_join,
           ipaddr_bind: vagrant_ipaddr_mariadb_server
+        },
+        mariadb: {
+          root: {
+            password: mariadb_root_password
+          },
+          normal_users: [
+                         {
+                           name: mariadb_manager_user_name,
+                           password: mariadb_manager_user_password,
+                           database: mariadb_manager_database,
+                           host: mariadb_manager_host
+                         }
+                        ],
+          databases: [ mariadb_manager_database ]
         }
       }
     end
@@ -67,6 +100,12 @@ Vagrant.configure(2) do |config|
         consul: {
           ipaddr_join: consul_ipaddr_join,
           ipaddr_bind: vagrant_ipaddr_manager
+        },
+        manager: {
+          server_name: "manager.example.com",
+          composer: {
+            github_token: github_token
+          }
         }
       }
     end

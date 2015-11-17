@@ -1,6 +1,3 @@
-# Create Consul server settings
-- name: Create sysconfig file for environments
-  template: src="consul/consul.j2" dest="/etc/sysconfig/consul" owner=root group=root mode=0644
 # Common task
 - name: Restart consul
   service: name=consul state=restarted

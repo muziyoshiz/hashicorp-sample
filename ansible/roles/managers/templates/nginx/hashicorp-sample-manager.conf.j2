@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name  manager.example.com;
+    server_name {{ manager.server_name }};
 
     root /home/vagrant/hashicorp-sample-manager/public;
     charset utf-8;

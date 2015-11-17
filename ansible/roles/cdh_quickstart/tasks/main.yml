@@ -1,10 +1,6 @@
 # Create Consul client settings
-- name: Create sysconfig file for environments
-  template: src="consul/consul.j2" dest="/etc/sysconfig/consul" owner=root group=root mode=0644
-# Cloudera-specific setting
 - name: Create impala service information for consul
   template: src="consul/impala.json" dest="/etc/consul.d/impala.json" owner=root group=root mode=0644
-# Common task
 - name: Restart consul
   service: name=consul state=restarted
 - name: Replace /etc/resolv.conf that includes "search cloudera"
