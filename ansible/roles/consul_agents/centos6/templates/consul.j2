@@ -1,6 +1,15 @@
 GOMAXPROCS=2
+
+{% if consul.enables_atlas is defined and consul.enables_atlas %}
+{% if consul.is_server is defined and consul.is_server %}
+OPTIONS="-server -bootstrap-expect {{ consul.bootstrap_expect }} -data-dir /tmp/consul -bind {{ consul.ipaddr_bind }} -atlas {{ consul.atlas_infrastructure_name }} -atlas-join -atlas-token {{ consul.atlas_token }}"
+{% else %}
+OPTIONS="-data-dir /tmp/consul -bind {{ consul.ipaddr_bind }} -atlas {{ consul.atlas_infrastructure_name }} -atlas-join -atlas-token {{ consul.atlas_token }}"
+{% endif %}
+{% else %}
 {% if consul.is_server is defined and consul.is_server %}
 OPTIONS="-server -bootstrap-expect {{ consul.bootstrap_expect }} -data-dir /tmp/consul -bind {{ consul.ipaddr_bind }}"
 {% else %}
 OPTIONS="-join {{ consul.ipaddr_join }} -data-dir /tmp/consul -bind {{ consul.ipaddr_bind }}"
+{% endif %}
 {% endif %}

@@ -1,10 +1,11 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# GitHub token file (gitignored)
-# NOTICE: Please create this file and write GitHub token only in one line
+# Token files (gitignored)
+# NOTICE: Please create these files and write token only in one line
 #         (Only one newline character is acceptable)
 GITHUB_TOKEN_FILEPATH = "./github_token"
+ATLAS_TOKEN_FILEPATH  = "./atlas_token"
 
 # IP addresses on host-only network
 vagrant_ipaddr_consul_server  = "192.168.33.10"
@@ -14,8 +15,13 @@ vagrant_ipaddr_mariadb_server = "192.168.33.20"
 vagrant_ipaddr_managers       = [ "192.168.33.30" ]
 vagrant_ipaddr_cdh_quickstart = "192.168.33.40"
 
-# Basic Consul settings
-consul_ipaddr_join = "192.168.33.10"
+# Consul settings
+# Toggle switch for join method to Consul cluster
+consul_enables_atlas = true
+# Settings when consul_enables_atlas == true
+consul_atlas_infrastructure_name = "muziyoshiz/hashicorp-sample"
+# Settings when consul_enables_atlas == false
+consul_ipaddr_join = vagrant_ipaddr_consul_server
 
 # MariaDB server settings
 # Auto-gerenated root password
@@ -32,6 +38,11 @@ manager_git_version       = "master"
 # GitHub settings
 if File.exists?(GITHUB_TOKEN_FILEPATH)
   github_token = File.open(GITHUB_TOKEN_FILEPATH).read.chomp
+end
+
+# Atlas settings
+if consul_enables_atlas and File.exists?(ATLAS_TOKEN_FILEPATH)
+  atlas_token = File.open(ATLAS_TOKEN_FILEPATH).read.chomp
 end
 
 Vagrant.configure(2) do |config|
@@ -54,6 +65,9 @@ Vagrant.configure(2) do |config|
         consul: {
           is_server: true,
           bootstrap_expect: 1,
+          enables_atlas: consul_enables_atlas,
+          atlas_infrastructure_name: consul_atlas_infrastructure_name,
+          atlas_token: atlas_token,
           ipaddr_bind: vagrant_ipaddr_consul_server
         }
       }
@@ -69,6 +83,9 @@ Vagrant.configure(2) do |config|
       ansible.playbook = "ansible/mariadb_servers.yml"
       ansible.extra_vars = {
         consul: {
+          enables_atlas: consul_enables_atlas,
+          atlas_infrastructure_name: consul_atlas_infrastructure_name,
+          atlas_token: atlas_token,
           ipaddr_join: consul_ipaddr_join,
           ipaddr_bind: vagrant_ipaddr_mariadb_server
         },
@@ -103,6 +120,9 @@ Vagrant.configure(2) do |config|
         ansible.playbook = "ansible/managers.yml"
         ansible.extra_vars = {
           consul: {
+            enables_atlas: consul_enables_atlas,
+            atlas_infrastructure_name: consul_atlas_infrastructure_name,
+            atlas_token: atlas_token,
             ipaddr_join: consul_ipaddr_join,
             ipaddr_bind: vagrant_ipaddr_managers[i]
           },
@@ -138,6 +158,9 @@ Vagrant.configure(2) do |config|
       ansible.playbook = "ansible/cdh_quickstart.yml"
       ansible.extra_vars = {
         consul: {
+          enables_atlas: consul_enables_atlas,
+          atlas_infrastructure_name: consul_atlas_infrastructure_name,
+          atlas_token: atlas_token,
           ipaddr_join: consul_ipaddr_join,
           ipaddr_bind: vagrant_ipaddr_cdh_quickstart
         }
