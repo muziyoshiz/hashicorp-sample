@@ -7,13 +7,13 @@
 GITHUB_TOKEN_FILEPATH = "./github_token"
 
 # IP addresses on host-only network
-vagrant_ipaddr_consul_server  = "192.168.33.12"
-vagrant_ipaddr_mariadb_server = "192.168.33.11"
-vagrant_ipaddr_manager        = "192.168.33.10"
-vagrant_ipaddr_cdh_quickstart = "192.168.33.20"
+vagrant_ipaddr_consul_server  = "192.168.33.10"
+vagrant_ipaddr_mariadb_server = "192.168.33.20"
+vagrant_ipaddr_manager        = "192.168.33.30"
+vagrant_ipaddr_cdh_quickstart = "192.168.33.40"
 
 # Basic Consul settings
-consul_ipaddr_join = "192.168.33.12"
+consul_ipaddr_join = "192.168.33.10"
 
 # MariaDB server settings
 # Auto-gerenated root password
@@ -44,7 +44,7 @@ Vagrant.configure(2) do |config|
     c.vm.network "private_network", ip: vagrant_ipaddr_consul_server
 
     c.vm.provision "ansible" do |ansible|
-      ansible.playbook = "../ansible/consul_servers.yml"
+      ansible.playbook = "ansible/consul_servers.yml"
       ansible.extra_vars = {
         consul: {
           is_server: true,
@@ -61,7 +61,7 @@ Vagrant.configure(2) do |config|
     c.vm.network "private_network", ip: vagrant_ipaddr_mariadb_server
 
     c.vm.provision "ansible" do |ansible|
-      ansible.playbook = "../ansible/mariadb_servers.yml"
+      ansible.playbook = "ansible/mariadb_servers.yml"
       ansible.extra_vars = {
         consul: {
           ipaddr_join: consul_ipaddr_join,
@@ -95,7 +95,7 @@ Vagrant.configure(2) do |config|
     end
 
     c.vm.provision "ansible" do |ansible|
-      ansible.playbook = "../ansible/managers.yml"
+      ansible.playbook = "ansible/managers.yml"
       ansible.extra_vars = {
         consul: {
           ipaddr_join: consul_ipaddr_join,
@@ -124,7 +124,7 @@ Vagrant.configure(2) do |config|
     end
 
     c.vm.provision "ansible" do |ansible|
-      ansible.playbook = "../ansible/cdh_quickstart.yml"
+      ansible.playbook = "ansible/cdh_quickstart.yml"
       ansible.extra_vars = {
         consul: {
           ipaddr_join: consul_ipaddr_join,
