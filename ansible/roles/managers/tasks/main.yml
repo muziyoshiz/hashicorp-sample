@@ -7,7 +7,7 @@
 - name: Start nginx and create autostart setting
   service: name=nginx state=started enabled=yes
 - name: Configure nginx
-  template: src="nginx/hashicorp-sample-manager.conf" dest="/etc/nginx/conf.d/hashicorp-sample-manager.conf" owner=root group=root
+  template: src="nginx/hashicorp-sample-manager.conf.j2" dest="/etc/nginx/conf.d/hashicorp-sample-manager.conf" owner=root group=root
 # Git
 - name: Install git
   yum: name="git" state=present
@@ -38,7 +38,7 @@
 - name: Clone sample FuelPHP application
   git: repo=https://github.com/muziyoshiz/hashicorp-sample-manager.git
        dest=/home/vagrant/hashicorp-sample-manager
-       version=master
+       version={{ manager.git.version }}
        accept_hostkey=yes
        force=yes
   sudo: no
@@ -48,8 +48,11 @@
   sudo: no
   args:
     chdir: /home/vagrant/hashicorp-sample-manager
+- name: Check GitHub Token
+  fail: msg="manager.composer.github_token is undefined. {{ manager.composer.github_token }}"
+  when: manager.composer.github_token is undefined or manager.composer.github_token == None
 - name: Set GitHub Token
-  command: php composer.phar config --global github-oauth.github.com 76d3b71859c3f511a8f7cc471667b5f4516a6387
+  command: php composer.phar config --global github-oauth.github.com {{ manager.composer.github_token }}
   sudo: no
   args:
     chdir: /home/vagrant/hashicorp-sample-manager
@@ -71,11 +74,7 @@
 # Restart nginx always at last
 - service: name=nginx state=restarted
 # Create Consul client settings
-- name: Create sysconfig file for environments
-  template: src="consul/consul" dest="/etc/sysconfig/consul" owner=root group=root mode=0644
-# Manager-specific setting
 - name: Create manager service information for consul
   template: src="consul/manager.json" dest="/etc/consul.d/manager.json" owner=root group=root mode=0644
-# Common task
 - name: Restart consul
   service: name=consul state=restarted

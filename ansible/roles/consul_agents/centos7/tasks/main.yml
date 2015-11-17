@@ -44,3 +44,6 @@
   template: src="resolv.conf" dest="/etc/resolv.conf" owner=root group=root mode=0644
 - name: Forbid NetworkManager from overwriting /etc/resolv.conf
   lineinfile: dest=/etc/NetworkManager/NetworkManager.conf line="dns=none"
+# Create setting for Consul server or Consul client
+- name: Create sysconfig file for environments
+  template: src="consul.j2" dest="/etc/sysconfig/consul" owner=root group=root mode=0644
