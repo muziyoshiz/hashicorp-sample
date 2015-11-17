@@ -47,9 +47,9 @@ This configuration requires more than 10 GB memory. It was tested in the followi
 
 ## References
 
-* "consulのinitスクリプトとsystemdユニットファイルを書いてみた - Qiita":http://qiita.com/yunano/items/7ef5fa5670721de55627 (in Japanese)
+* [consulのinitスクリプトとsystemdユニットファイルを書いてみた - Qiita](http://qiita.com/yunano/items/7ef5fa5670721de55627) (in Japanese)
     * Scripts for starting Consul agent on CentOS 6 and 7
-* "Vagrant box quickstart/cdh | Atlas by HashiCorp":https://atlas.hashicorp.com/quickstart/boxes/cdh
+* [Vagrant box quickstart/cdh](https://atlas.hashicorp.com/quickstart/boxes/cdh)
     * Box file of Cloudera QuickStart VM 5.4.2
 
 ## License
