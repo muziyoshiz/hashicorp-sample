@@ -9,7 +9,9 @@ GITHUB_TOKEN_FILEPATH = "./github_token"
 # IP addresses on host-only network
 vagrant_ipaddr_consul_server  = "192.168.33.10"
 vagrant_ipaddr_mariadb_server = "192.168.33.20"
-vagrant_ipaddr_managers       = [ "192.168.33.30", "192.168.33.31" ]
+# When multiple managers are required, set multiple IP addresses as follows
+# vagrant_ipaddr_managers       = [ "192.168.33.30", "192.168.33.31" ]
+vagrant_ipaddr_managers       = [ "192.168.33.30" ]
 vagrant_ipaddr_cdh_quickstart = "192.168.33.40"
 
 # Basic Consul settings
