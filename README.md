@@ -35,7 +35,7 @@ The following software must be installed for deploying VMs by this configuration
 * Vagrant
 * Ansible
 
-This configuration was tested in the following environment:
+This configuration requires more than 10 GB memory. It was tested in the following environment:
 
 * MacBook Pro (Retina, 15-inch, Mid 2014)
     * CPU: 2.2 GHz Intel Core i7
