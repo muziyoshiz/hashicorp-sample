@@ -13,7 +13,7 @@ The goal of this sample configuration is to evaluate the usefulness of HashiCorp
 By using this configuration, four or more VMs are deployed automatically on local machine by Ansible. Consul agents run on these VMs and join one Consul cluster through the Consul server or Atlas.
 
 * manager1, manager2, ...
-    * Sample web application based on FuelPHP
+    * Sample web application based on FuelPHP ([muziyoshiz/hashicorp-sample-manager](https://github.com/muziyoshiz/hashicorp-sample-manager))
     * Composer requires "github_token" file which contains GitHub token
 * mariadb1
     * MariaDB server
