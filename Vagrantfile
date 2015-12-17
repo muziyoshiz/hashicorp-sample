@@ -105,6 +105,32 @@ Vagrant.configure(2) do |config|
     end
   end
 
+  # Cloudera QuickStart VM
+  config.vm.define "cdh-quickstart" do |c|
+    c.vm.box = "quickstart/cdh"
+
+    c.vm.hostname = "quickstart.cloudera"
+    c.vm.network "private_network", ip: vagrant_ipaddr_cdh_quickstart
+
+    c.vm.provider "virtualbox" do |vb|
+      vb.cpus = 2
+      vb.memory = "8192"
+    end
+
+    c.vm.provision "ansible" do |ansible|
+      ansible.playbook = "ansible/cdh_quickstart.yml"
+      ansible.extra_vars = {
+        consul: {
+          enables_atlas: consul_enables_atlas,
+          atlas_infrastructure_name: consul_atlas_infrastructure_name,
+          atlas_token: atlas_token,
+          ipaddr_join: consul_ipaddr_join,
+          ipaddr_bind: vagrant_ipaddr_cdh_quickstart
+        }
+      }
+    end
+  end
+
   # Sample Manager Server
   num_of_managers = vagrant_ipaddr_managers.size
   (0...num_of_managers).each do |i|
@@ -139,32 +165,6 @@ Vagrant.configure(2) do |config|
           }
         }
       end
-    end
-  end
-
-  # Cloudera QuickStart VM
-  config.vm.define "cdh-quickstart" do |c|
-    c.vm.box = "quickstart/cdh"
-
-    c.vm.hostname = "quickstart.cloudera"
-    c.vm.network "private_network", ip: vagrant_ipaddr_cdh_quickstart
-
-    c.vm.provider "virtualbox" do |vb|
-      vb.cpus = 2
-      vb.memory = "8192"
-    end
-
-    c.vm.provision "ansible" do |ansible|
-      ansible.playbook = "ansible/cdh_quickstart.yml"
-      ansible.extra_vars = {
-        consul: {
-          enables_atlas: consul_enables_atlas,
-          atlas_infrastructure_name: consul_atlas_infrastructure_name,
-          atlas_token: atlas_token,
-          ipaddr_join: consul_ipaddr_join,
-          ipaddr_bind: vagrant_ipaddr_cdh_quickstart
-        }
-      }
     end
   end
 end
