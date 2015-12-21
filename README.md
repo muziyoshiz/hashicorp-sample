@@ -9,6 +9,7 @@ $ git clone https://github.com/muziyoshiz/hashicorp-sample.git
 $ cd hashicorp-sample
 $ echo "your github token" > ./github_token
 $ echo "your atlas token" > ./atlas_token
+$ echo "your atlas infra name" > ./atlas_infra
 $ vagrant up
 ```
 
