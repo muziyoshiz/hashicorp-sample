@@ -2,6 +2,16 @@
 
 Sample configuration of HashiCorp tools
 
+## How to Deploy
+
+```
+$ git clone https://github.com/muziyoshiz/hashicorp-sample.git
+$ cd hashicorp-sample
+$ echo "your github token" > ./github_token
+$ echo "your atlas token" > ./atlas_token
+$ vagrant up
+```
+
 ## Overview
 
 The goal of this sample configuration is to evaluate the usefulness of HashiCorp tools in practical situations. The current version uses only a part of HashiCorp tools:
