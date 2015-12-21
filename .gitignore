@@ -1,3 +1,4 @@
 .vagrant
 github_token
 atlas_token
+atlas_infra

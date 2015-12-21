@@ -6,6 +6,7 @@
 #         (Only one newline character is acceptable)
 GITHUB_TOKEN_FILEPATH = "./github_token"
 ATLAS_TOKEN_FILEPATH  = "./atlas_token"
+ATLAS_INFRA_FILEPATH = "./atlas_infra"
 
 # IP addresses on host-only network
 vagrant_ipaddr_consul_server  = "192.168.33.10"
@@ -18,8 +19,6 @@ vagrant_ipaddr_cdh_quickstart = "192.168.33.40"
 # Consul settings
 # Toggle switch for join method to Consul cluster
 consul_enables_atlas = true
-# Settings when consul_enables_atlas == true
-consul_atlas_infrastructure_name = "muziyoshiz/hashicorp-sample"
 # Settings when consul_enables_atlas == false
 consul_ipaddr_join = vagrant_ipaddr_consul_server
 
@@ -43,6 +42,11 @@ end
 # Atlas settings
 if consul_enables_atlas and File.exists?(ATLAS_TOKEN_FILEPATH)
   atlas_token = File.open(ATLAS_TOKEN_FILEPATH).read.chomp
+end
+
+# Atlas infrastructure name
+if consul_enables_atlas and File.exists?(ATLAS_INFRA_FILEPATH)
+  consul_atlas_infrastructure_name = File.open(ATLAS_INFRA_FILEPATH).read.chomp
 end
 
 Vagrant.configure(2) do |config|
