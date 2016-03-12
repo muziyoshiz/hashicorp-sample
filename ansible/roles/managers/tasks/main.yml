@@ -42,11 +42,11 @@
        version={{ manager.git.version }}
        accept_hostkey=yes
        force=yes
-  sudo: no
+  become: no
 # Execute Composer
 - name: Update Composer itself
   command: php composer.phar self-update
-  sudo: no
+  become: no
   args:
     chdir: /home/vagrant/hashicorp-sample-manager
 - name: Check GitHub Token
@@ -54,12 +54,12 @@
   when: manager.composer.github_token is undefined or manager.composer.github_token == None
 - name: Set GitHub Token
   command: php composer.phar config --global github-oauth.github.com {{ manager.composer.github_token }}
-  sudo: no
+  become: no
   args:
     chdir: /home/vagrant/hashicorp-sample-manager
 - name: Update libraries
   command: php composer.phar update
-  sudo: no
+  become: no
   args:
     chdir: /home/vagrant/hashicorp-sample-manager
 # Configure settings for FuelPHP

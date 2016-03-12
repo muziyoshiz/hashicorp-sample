@@ -1,6 +1,6 @@
 - name: MariaDB Servers
   hosts: all
-  sudo: yes
+  become: yes
   roles:
     - common
     - common/centos7
