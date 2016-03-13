@@ -53,8 +53,8 @@ This configuration requires more than 10 GB memory. It was tested in the followi
     * Memory: 16 GB 1600 MHz DDR3
 * OS X Yosemite 10.10.5
 * VirtualBox 5.0.10
-* Vagrant 1.7.4
-* Ansible 1.9.4
+* Vagrant 1.8.1
+* Ansible 2.0.1
 
 ## References
 
