@@ -1,12 +1,12 @@
-# Install packages
-- name: Install unzip for Consul package
+# Install unzip
+- name: Install unzip for unarchive module
   yum: name=unzip state=present
 # Install Consul
 - name: Check if consul is installed
   stat: path=/usr/local/bin/consul
   register: consul_bin
 - name: Download and unzip Consul {{ consul_version }} command
-  unarchive: src="https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip" dest=/home/vagrant copy=no
+  unarchive: src="https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip" dest=/tmp copy=no
   when: not consul_bin.stat.exists
 - name: Add execution permission to consul command
   file: path=/tmp/consul state=file mode="0755"
