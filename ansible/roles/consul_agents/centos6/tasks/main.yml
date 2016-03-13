@@ -1,19 +1,23 @@
 # Install unzip
 - name: Install unzip for unarchive module
   yum: name=unzip state=present
-# Install Consul
+
+# Install consul if not installed
 - name: Check if consul is installed
   stat: path=/usr/local/bin/consul
   register: consul_bin
-- name: Download and unzip Consul {{ consul_version }} command
-  unarchive: src="https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip" dest=/tmp copy=no
+- block:
+  - name: Download and unzip Consul {{ consul_version }} command
+    unarchive: src="https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip" dest=/tmp copy=no
+
+  - name: Add execution permission to consul command
+    file: path=/tmp/consul state=file mode="0755"
+
+  - name: Move consul command
+    command: mv /tmp/consul /usr/local/bin/consul
+
   when: not consul_bin.stat.exists
-- name: Add execution permission to consul command
-  file: path=/tmp/consul state=file mode="0755"
-  when: not consul_bin.stat.exists
-- name: Move consul command
-  command: mv /tmp/consul /usr/local/bin/consul
-  when: not consul_bin.stat.exists
+
 - name: Create consul setting directory
   file: path=/etc/consul.d state=directory owner=root group=root mode=0755
 - name: Create common consul script for CentOS 6

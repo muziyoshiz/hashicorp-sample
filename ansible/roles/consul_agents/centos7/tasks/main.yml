@@ -1,19 +1,23 @@
 # Install unzip
 - name: Install unzip for unarchive module
   yum: name=unzip state=present
-# Install Consul
+
+# Install Consul if not installed
 - name: Check if consul is installed
   stat: path=/usr/local/bin/consul
   register: consul_bin
-- name: Download and unzip Consul {{ consul_version }} command
-  unarchive: src="https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip" dest=/home/vagrant copy=no
+- block:
+  - name: Download and unzip Consul {{ consul_version }} command
+    unarchive: src="https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip" dest=/home/vagrant copy=no
+
+  - name: Add execution permission to consul command
+    file: path=/home/vagrant/consul state=file mode="0755"
+
+  - name: Move consul command
+    command: mv /home/vagrant/consul /usr/local/bin/consul
+
   when: not consul_bin.stat.exists
-- name: Add execution permission to consul command
-  file: path=/home/vagrant/consul state=file mode="0755"
-  when: not consul_bin.stat.exists
-- name: Move consul command
-  command: mv /home/vagrant/consul /usr/local/bin/consul
-  when: not consul_bin.stat.exists
+
 # Create Consul agent common setting
 - name: Create consul setting directory
   file: path=/etc/consul.d state=directory owner=root group=root mode=0755
