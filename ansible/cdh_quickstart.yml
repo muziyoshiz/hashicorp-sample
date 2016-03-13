@@ -1,6 +1,6 @@
 - name: Cloudera QuickStart VM
   hosts: all
-  sudo: yes
+  become: yes
   roles:
     - common
     - common/centos6
