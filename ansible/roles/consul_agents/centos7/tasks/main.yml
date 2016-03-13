@@ -5,14 +5,8 @@
 - name: Check if consul is installed
   stat: path=/usr/local/bin/consul
   register: consul_bin
-- name: Download Consul {{ consul_version }} package
-  get_url: url="https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip" dest=/home/vagrant/consul.zip
-  when: not consul_bin.stat.exists
-- name: Unzip Consul package
-  unarchive: src=/home/vagrant/consul.zip dest=/home/vagrant copy=no
-  when: not consul_bin.stat.exists
-- name: Remove Consul package
-  command: rm /home/vagrant/consul.zip
+- name: Download and unzip Consul {{ consul_version }} command
+  unarchive: src="https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip" dest=/home/vagrant copy=no
   when: not consul_bin.stat.exists
 - name: Add execution permission to consul command
   file: path=/home/vagrant/consul state=file mode="0755"
