@@ -5,8 +5,8 @@
 - name: Check if consul is installed
   stat: path=/usr/local/bin/consul
   register: consul_bin
-- name: Download Consul package
-  get_url: url=https://releases.hashicorp.com/consul/0.5.2/consul_0.5.2_linux_amd64.zip dest=/home/vagrant/consul.zip
+- name: Download Consul {{ consul_version }} package
+  get_url: url="https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip" dest=/home/vagrant/consul.zip
   when: not consul_bin.stat.exists
 - name: Unzip Consul package
   command: unzip consul.zip
